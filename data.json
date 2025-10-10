@@ -1,0 +1,15 @@
+{
+  "rows": 4,
+  "cols": 6,
+  "top_k": 3,
+  "d_min": 3,
+  "soft_w": 8.0,
+  "entrances": [[0,0], [0,5]],
+  "companies": [
+    {"name":"Google","pop":10,"size":3},
+    {"name":"Deloitte","pop":9,"size":2},
+    {"name":"JP Morgan","pop":9,"size":2},
+    {"name":"John Deere","pop":6,"size":1},
+    {"name":"Abbott","pop":5,"size":1}
+  ]
+}
