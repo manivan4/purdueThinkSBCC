@@ -105,7 +105,7 @@ for c in companies:
 
 # Each booth gets at most one company
 for b in booths:
-    model.Add(sum(y[c, b] for c in companies) <= 1)
+    model.Add(sum(y[c, b] for c in companies) == 1)
 
 # Conflict weights (higher = stronger penalty)
 weights = {}
