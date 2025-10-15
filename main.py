@@ -76,7 +76,11 @@ company_col = "Company"          # Change if your column name is different
 popularity_col = "Popularity"    # Change if your Excel header is different
 
 # Extract lists/dicts automatically
-companies = company_data[company_col].dropna().tolist()
+
+# CHANGE THIS SOON!!!!!!
+# TEMP!!!!!!: limit to first 20 companies for testing
+companies = company_data[company_col].dropna().tolist()[:20]
+
 popularity = dict(zip(company_data[company_col], company_data[popularity_col]))
 
 print(f"✅ Loaded {len(companies)} companies from Excel.")
@@ -140,11 +144,16 @@ result = solver.Solve(model)
 
 print("\n-------------------------------")
 if result in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-    print(" Optimal/feasible layout found:\n")
+    print("✅ Optimal/feasible layout found:\n")
+    assigned = []
     for c in companies:
         for b in booths:
             if solver.Value(y[c, b]) == 1:
-                print(f"{c:10s} → Booth {b}")
+                assigned.append((c, b))
+    # Print only the first 5 results
+    for c, b in assigned[:20]:
+        print(f"{c:25s} → Booth {b}")
+
 else:
     print("No solution found within time limit.")
 print("-------------------------------")
