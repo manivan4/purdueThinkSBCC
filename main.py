@@ -78,8 +78,8 @@ popularity_col = "Popularity"    # Change if your Excel header is different
 # Extract lists/dicts automatically
 
 # CHANGE THIS SOON!!!!!!
-# TEMP!!!!!!: limit to first 20 companies for testing
-companies = company_data[company_col].dropna().tolist()[:20]
+# TEMP!!!!!!: limit to first 50 companies for testing
+companies = company_data[company_col].dropna().tolist()[:50]
 
 popularity = dict(zip(company_data[company_col], company_data[popularity_col]))
 
@@ -150,8 +150,8 @@ if result in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         for b in booths:
             if solver.Value(y[c, b]) == 1:
                 assigned.append((c, b))
-    # Print only the first 5 results
-    for c, b in assigned[:20]:
+    # Print only the first 50 results
+    for c, b in assigned[:50]:
         print(f"{c:25s} → Booth {b}")
 
 else:
