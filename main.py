@@ -138,8 +138,8 @@ model.Minimize(sum(cost * z for z, cost in z_terms))
 # STEP 5: Solve optimization
 # -------------------------------
 solver = cp_model.CpSolver()
-solver.parameters.max_time_in_seconds = 10
-solver.parameters.num_search_workers = 8
+solver.parameters.max_time_in_seconds = 60
+solver.parameters.num_search_workers = 16
 result = solver.Solve(model)
 
 print("\n-------------------------------")
