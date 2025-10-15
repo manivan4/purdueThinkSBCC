@@ -86,6 +86,10 @@ print(company_data.head())
 # -------------------------------
 # STEP 4: Build optimization model
 # -------------------------------
+
+# Define booths dynamically from your Excel layout
+booths = coords["booth"].tolist()
+
 model = cp_model.CpModel()
 
 # Decision variables
