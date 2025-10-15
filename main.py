@@ -64,19 +64,24 @@ plt.ylabel("Y")
 plt.show()
 
 # -------------------------------
-# STEP 3: Define companies + popularity
+# STEP 3: Load companies + popularity from Excel
 # -------------------------------
-companies = [
-    "Lilly", "Crowe", "Deloitte", "PwC", "EY",
-    "Meta", "Amazon", "GE", "Ford", "Nvidia"
-]
 
-popularity = {
-    "Lilly": 10, "Crowe": 9, "Deloitte": 8, "PwC": 7, "EY": 6,
-    "Meta": 9, "Amazon": 9, "GE": 5, "Ford": 6, "Nvidia": 8
-}
+# Read company data dynamically from Excel
+company_data = pd.read_excel("Career_Fair_Recruiting_Popularity.xlsx")
 
-booths = coords["booth"].tolist()
+# Expecting columns like: "Company" and "Popularity"
+# (you can rename these lines if your headers differ)
+company_col = "Company"          # Change if your column name is different
+popularity_col = "Popularity"    # Change if your Excel header is different
+
+# Extract lists/dicts automatically
+companies = company_data[company_col].dropna().tolist()
+popularity = dict(zip(company_data[company_col], company_data[popularity_col]))
+
+print(f"✅ Loaded {len(companies)} companies from Excel.")
+print(company_data.head())
+
 
 # -------------------------------
 # STEP 4: Build optimization model
