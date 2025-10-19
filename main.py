@@ -78,8 +78,8 @@ popularity_col = "Popularity"    # Change if your Excel header is different
 # Extract lists/dicts automatically
 
 # CHANGE THIS SOON!!!!!!
-# TEMP!!!!!!: limit to first 50 companies for testing
-companies = company_data[company_col].dropna().tolist()[:50]
+# TEMP!!!!!!: limit to first 60 companies for testing
+companies = company_data[company_col].dropna().tolist()[:60]
 
 popularity = dict(zip(company_data[company_col], company_data[popularity_col]))
 
@@ -138,8 +138,8 @@ model.Minimize(sum(cost * z for z, cost in z_terms))
 # STEP 5: Solve optimization
 # -------------------------------
 solver = cp_model.CpSolver()
-solver.parameters.max_time_in_seconds = 60
-solver.parameters.num_search_workers = 8
+solver.parameters.max_time_in_seconds = 100
+solver.parameters.num_search_workers = 9
 result = solver.Solve(model)
 
 print("\n-------------------------------")
@@ -150,9 +150,19 @@ if result in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         for b in booths:
             if solver.Value(y[c, b]) == 1:
                 assigned.append((c, b))
-    # Print only the first 50 results
-    for c, b in assigned[:50]:
+    # Print only the first 60 results
+    for c, b in assigned[:60]:
         print(f"{c:25s} → Booth {b}")
+
+    # -------------------------------
+    # ADDED: Compute and print optimization score
+    # -------------------------------
+    score = solver.ObjectiveValue()
+    print(f"\n🧩 Optimization Score: {score:,.0f} (lower = better)")
+
+    # Optional: normalized efficiency score
+    normalized = 1 / (1 + score)
+    print(f"⚙️ Normalized Efficiency Score: {normalized:.6f}")
 
 else:
     print("No solution found within time limit.")
