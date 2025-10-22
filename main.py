@@ -10,6 +10,7 @@ import math
 from itertools import combinations
 from ortools.sat.python import cp_model
 import matplotlib.pyplot as plt
+import os
 
 # -------------------------------
 # STEP 1: Load booth coordinates
@@ -75,17 +76,13 @@ company_data = pd.read_excel("Career_Fair_Recruiting_Popularity.xlsx")
 company_col = "Company"          # Change if your column name is different
 popularity_col = "Popularity"    # Change if your Excel header is different
 
-# Extract lists/dicts automatically
-
-# CHANGE THIS SOON!!!!!!
-# TEMP!!!!!!: limit to first 60 companies for testing
-companies = company_data[company_col].dropna().tolist()[:60]
+# CHANGE: limit to first 50 companies for testing
+companies = company_data[company_col].dropna().tolist()[:50]
 
 popularity = dict(zip(company_data[company_col], company_data[popularity_col]))
 
 print(f"✅ Loaded {len(companies)} companies from Excel.")
 print(company_data.head())
-
 
 # -------------------------------
 # STEP 4: Build optimization model
@@ -103,9 +100,9 @@ y = {(c, b): model.NewBoolVar(f"y[{c},{b}]") for c in companies for b in booths}
 for c in companies:
     model.Add(sum(y[c, b] for b in booths) == 1)
 
-# Each booth gets at most one company
+# Each booth gets at most one company (use <= 1 instead of == 1)
 for b in booths:
-    model.Add(sum(y[c, b] for c in companies) == 1)
+    model.Add(sum(y[c, b] for c in companies) <= 1)
 
 # Conflict weights (higher = stronger penalty)
 weights = {}
@@ -154,7 +151,6 @@ if result in (cp_model.OPTIMAL, cp_model.FEASIBLE):
     for c, b in assigned[:60]:
         print(f"{c:25s} → Booth {b}")
 
-    # -------------------------------
     # ADDED: Compute and print optimization score
     # -------------------------------
     score = solver.ObjectiveValue()
@@ -172,7 +168,6 @@ print("-------------------------------")
 # ===============================
 # STEP 6: Compare with Layout #2 (manual competition support)
 # ===============================
-import os
 
 def load_manual_competitions_csv(csv_path):
     """Optional: load additional manual competition pairs from a CSV with columns booth_a,booth_b."""
@@ -223,9 +218,9 @@ def optimize_with_coords(coords_df, manual_pairs=None, manual_weight=2.0, title=
     for c in companies:
         model2.Add(sum(y2[c, b] for b in layout_booths) == 1)
 
-    # each booth gets at most one company  (matches your current equality)
+    # each booth gets at most one company  (use <= 1 instead of == 1)
     for b in layout_booths:
-        model2.Add(sum(y2[c, b] for c in companies) == 1)
+        model2.Add(sum(y2[c, b] for c in companies) <= 1)
 
     # 3) Edge weights
     weights2 = {}
@@ -282,7 +277,8 @@ def optimize_with_coords(coords_df, manual_pairs=None, manual_weight=2.0, title=
         print(f"⚙️ {title} Normalized Efficiency: {1/(1+score2):.6f}")
     else:
         print(f"\n❌ {title}: no solution found within time limit.")
-    return score2, assignment2, (b2b, same_col, conflict_edges2, weights2)
+
+    return score2, assignment2, res2
 
 # ---- Load Layout #2 coordinates
 coords2 = pd.read_excel("SBCC_Layout_2_Coordinates.xlsx")
@@ -335,4 +331,3 @@ if (layout1_score is not None) and (layout2_score is not None):
     else:
         print("⚖️ Both layouts perform equally well.")
 print("==============================\n")
-
