@@ -5,3 +5,5 @@ matplotlib
 openpyxl
 opencv-python
 pytesseract
+pdf2image
+yfinance
