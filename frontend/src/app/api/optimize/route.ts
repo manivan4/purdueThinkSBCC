@@ -14,6 +14,7 @@ type PythonPayload = {
   booth_count: number;
   placed_count: number;
   min_distance: number;
+  typical_spacing?: number;
   assignments: Array<{ company: string; booth: number; x?: number; y?: number }>;
   unplaced_companies: string[];
   big_companies?: string[];
@@ -21,9 +22,9 @@ type PythonPayload = {
 
 type RunMode = "primary" | "overflow" | "comparison";
 
-function scoreFromDistance(minDistance: number): number {
-  // Simple normalized score: 1.0 when >= 1.5 units apart, scaled below that.
-  const clamped = Math.max(0, Math.min(minDistance / 1.5, 1));
+function scoreFromDistance(minDistance: number, typicalSpacing?: number): number {
+  const baseline = typicalSpacing && typicalSpacing > 0 ? typicalSpacing * 2.5 : 10;
+  const clamped = Math.max(0, Math.min(minDistance / baseline, 1));
   return Number(clamped.toFixed(3));
 }
 
@@ -75,7 +76,8 @@ async function buildResponsePayload(
     boothCount: payload.booth_count,
     placedCount: payload.placed_count,
     minDistance: payload.min_distance,
-    score: scoreFromDistance(payload.min_distance),
+    typicalSpacing: payload.typical_spacing,
+    score: scoreFromDistance(payload.min_distance, payload.typical_spacing),
     assignments: payload.assignments,
     unplacedCompanies: payload.unplaced_companies,
     bigCompanies: payload.big_companies ?? [],

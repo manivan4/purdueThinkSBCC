@@ -38,7 +38,7 @@ export function ResultsScreen({
   error,
 }: ResultsScreenProps) {
   const imageSource = primaryRun?.plotUrl ?? layoutImageUrl ?? layoutImage;
-  const assignedCompanies = primaryRun?.assignments ?? [];
+  const assignedCompanies = (primaryRun?.assignments ?? []).slice().sort((a, b) => a.booth - b.booth);
   const scoreInfo = scoreBadge(primaryRun?.score ?? 0);
   const placedCount = primaryRun?.placedCount ?? 0;
   const boothCount = primaryRun?.boothCount ?? 0;

@@ -166,9 +166,11 @@ def extract_booths(image_path, min_area, max_area, invert, debug_path=None):
     df = (
         df.groupby("booth", as_index=False)
         .agg({"x": "mean", "y": "mean"})
-        .sort_values("booth")
         .reset_index(drop=True)
     )
+    # Ensure booth numbering is contiguous and ordered top-left to bottom-right
+    df = df.sort_values(["y", "x"]).reset_index(drop=True)
+    df["booth"] = df.index + 1
 
     if debug_img is not None:
         cv2.imwrite(debug_path, debug_img)

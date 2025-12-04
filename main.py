@@ -35,9 +35,12 @@ def find_col(df, candidates):
     raise ValueError(f"Could not find any of {candidates} in columns: {list(df.columns)}")
 
 
-def wrap_label(text, max_chars=14):
-    """Wrap text into multiple lines to fit inside a booth box."""
-    lines = wrap(str(text), max_chars) or [""]
+def wrap_label(text, max_chars=14, max_words=1):
+    """Shorten and wrap text to fit inside a booth box."""
+    s = str(text).strip()
+    if max_words and s:
+        s = " ".join(s.split()[:max_words])
+    lines = wrap(s, max_chars) or [""]
     return "\n".join(lines)
 
 
@@ -73,7 +76,7 @@ def plot_layout(coords_df, assigned_df, plot_path, title="Optimized Career Fair 
         )
         ax.add_patch(rect)
 
-        label = wrap_label(company, max_chars=14)
+        label = wrap_label(company, max_chars=14, max_words=1)
         ax.text(
             x,
             y,
@@ -413,8 +416,23 @@ def min_distance_between_assigned():
         mins.append(min(booth_distance(b, o) for o in others))
     return min(mins) if mins else 0.0
 
+def typical_spacing():
+    """Median nearest-neighbor distance across all booths (layout-based baseline)."""
+    distances = []
+    booth_list = coords["booth"].tolist()
+    for b in booth_list:
+        others = [o for o in booth_list if o != b]
+        if not others:
+            continue
+        distances.append(min(booth_distance(b, o) for o in others))
+    if not distances:
+        return 0.0
+    return float(pd.Series(distances).median())
+
 min_dist = min_distance_between_assigned()
+typical_nn = typical_spacing()
 print(f"\n📏 Min distance between any placed companies: {min_dist:.3f}")
+print(f"📐 Typical booth spacing (median nearest-neighbor): {typical_nn:.3f}")
 print("-------------------------------")
 
 # Optional JSON summary (for API/front-end integration)
@@ -431,6 +449,7 @@ if args.json_out:
         "booth_count": int(len(coords)),
         "placed_count": int(len(assigned_df)),
         "min_distance": float(min_dist),
+        "typical_spacing": float(typical_nn),
         "assignments": assignment_with_coords,
         "unplaced_companies": unplaced_companies,
         "big_companies": big_companies,
