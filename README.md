@@ -14,3 +14,8 @@ Trying to make a computer algorithm that optimizes a career fair layout
 - Install deps: `pip install -r requirements.txt` (needs network to fetch from Yahoo via yfinance).
 - Run: `python3 build_popularity_from_market_cap.py`
 - Output: `companies.csv` with columns `company_name,ticker,market_cap,popularity_score` (popularity = market cap; 0 if missing/failed).
+
+### API wrapper (for hosting)
+- Run locally: `uvicorn api_server:app --host 0.0.0.0 --port 8000`
+- POST `/optimize` with `layout` file (image/PDF/Excel), `companies` (JSON list string) or `companiesFile` (Excel/CSV first column), optional `invert/min_area/max_area`.
+- Response includes optimizer JSON and base64 plot; the Python service needs Tesseract (and poppler for PDFs) available in the environment.

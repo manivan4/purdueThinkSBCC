@@ -168,7 +168,7 @@ def extract_booths(image_path, min_area, max_area, invert, debug_path=None):
         .agg({"x": "mean", "y": "mean"})
         .reset_index(drop=True)
     )
-    # Ensure booth numbering is contiguous and ordered top-left to bottom-right
+    # Normalize to contiguous numbering starting top-left
     df = df.sort_values(["y", "x"]).reset_index(drop=True)
     df["booth"] = df.index + 1
 

@@ -77,6 +77,7 @@ def plot_layout(coords_df, assigned_df, plot_path, title="Optimized Career Fair 
         ax.add_patch(rect)
 
         label = wrap_label(company, max_chars=14, max_words=1)
+        label = f"{booth}: {label}"
         ax.text(
             x,
             y,
