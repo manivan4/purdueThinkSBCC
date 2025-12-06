@@ -9,6 +9,8 @@ export type OptimizeRequest = {
 
 export async function optimizeLayout(request: OptimizeRequest): Promise<OptimizerRun> {
   const { layoutFile, companies, mode, roomLabel } = request;
+  const apiBase = process.env.NEXT_PUBLIC_OPTIMIZER_API?.trim().replace(/\/+$/, "") || "";
+  const endpoint = `${apiBase}/api/optimize`;
   const formData = new FormData();
   formData.append("layout", layoutFile);
   formData.append("companies", JSON.stringify(companies));
@@ -17,7 +19,7 @@ export async function optimizeLayout(request: OptimizeRequest): Promise<Optimize
     formData.append("roomLabel", roomLabel);
   }
 
-  const res = await fetch("/api/optimize", {
+  const res = await fetch(endpoint, {
     method: "POST",
     body: formData,
   });
